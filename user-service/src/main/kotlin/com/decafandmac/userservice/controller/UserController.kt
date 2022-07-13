@@ -11,14 +11,11 @@ import org.modelmapper.convention.MatchingStrategies
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/service-user/")
 class UserController(
     private val env: Environment,
     private val greeting: Greeting,
@@ -26,7 +23,7 @@ class UserController(
 )  {
 
     @GetMapping("/health_check")
-    fun status() = "It's Working in User service"
+    fun status() = "It's Working in User service on PORT ${env.getProperty("local.server.port")}"
 
     @GetMapping("/welcome")
 //    fun welcome() = env.getProperty("greeting.message")
@@ -43,5 +40,25 @@ class UserController(
         val responseUser: ResponseUser = modelMapper.map(userDto, ResponseUser::class.java)
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser)
+    }
+
+    @GetMapping("/users")
+    fun getUsers(): ResponseEntity<List<ResponseUser>> {
+        var userList: Iterable<UserEntity> = userService.getUserByAll()
+        var result: MutableList<ResponseUser> = mutableListOf<ResponseUser>()
+
+        userList.forEach {
+            result.add(ModelMapper().map(it, ResponseUser::class.java))
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(result)
+    }
+
+    @GetMapping("/users/{userId}")
+    fun getUser(@PathVariable("userId") userId: String): ResponseEntity<ResponseUser> {
+        var userDto: UserDto = userService.getUserByUserId(userId)
+        val result: ResponseUser = ModelMapper().map(userDto, ResponseUser::class.java)
+
+        return ResponseEntity.status(HttpStatus.OK).body(result)
     }
 }

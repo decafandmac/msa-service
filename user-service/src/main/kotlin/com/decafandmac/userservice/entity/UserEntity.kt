@@ -6,8 +6,8 @@ import javax.persistence.*
 @Table(name = "users")
 data class UserEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0L,
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    var id: Long,
 
     @Column(length = 50, unique = true)
     var email: String,
@@ -18,6 +18,6 @@ data class UserEntity(
     @Column(unique = true)
     var userId: String,
 
-    @Column(unique = true)
+    @Column
     var encryptedPwd: String
 )
