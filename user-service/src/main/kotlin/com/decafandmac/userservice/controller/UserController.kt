@@ -15,7 +15,7 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/service-user/")
+@RequestMapping("/user-service/")
 class UserController(
     private val env: Environment,
     private val greeting: Greeting,
